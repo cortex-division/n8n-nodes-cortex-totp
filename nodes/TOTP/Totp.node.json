@@ -1,0 +1,15 @@
+{
+	"node": "n8n-nodes-cortex-totp.totp",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Security"],
+	"resources": {
+		"credentialDocumentation": [],
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/cortex-division/n8n-nodes-cortex-totp"
+			}
+		]
+	},
+	"alias": ["2FA", "OTP", "authentication", "two-factor"]
+}

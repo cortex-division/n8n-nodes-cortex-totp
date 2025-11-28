@@ -1,0 +1,65 @@
+{
+  "name": "n8n-nodes-cortex-totp",
+  "version": "0.1.0",
+  "description": "n8n node for generating and verifying Time-based One-Time Passwords (TOTP)",
+  "license": "MIT",
+  "homepage": "https://github.com/cortex-division/n8n-nodes-cortex-totp",
+  "keywords": [
+    "n8n-community-node-package",
+    "totp",
+    "otp",
+    "2fa",
+    "two-factor-authentication",
+    "authentication",
+    "security"
+  ],
+  "author": {
+    "name": "Caitlyn",
+    "email": "caitlyn@menorah.ai"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cortex-division/n8n-nodes-cortex-totp.git"
+  },
+  "scripts": {
+    "build": "n8n-node build",
+    "build:watch": "tsc --watch",
+    "dev": "n8n-node dev",
+    "lint": "n8n-node lint",
+    "lint:fix": "n8n-node lint --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "release": "n8n-node release",
+    "prepublishOnly": "n8n-node prerelease"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "strict": false,
+    "credentials": [],
+    "nodes": [
+      "dist/nodes/TOTP/Totp.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@n8n/node-cli": "*",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.10.1",
+    "@types/qrcode": "^1.5.6",
+    "eslint": "9.32.0",
+    "jest": "^30.2.0",
+    "prettier": "3.6.2",
+    "release-it": "^19.0.4",
+    "ts-jest": "^29.4.5",
+    "typescript": "5.9.2"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
+  }
+}
