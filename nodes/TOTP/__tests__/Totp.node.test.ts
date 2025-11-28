@@ -1,13 +1,13 @@
 import type { IExecuteFunctions, INodeExecutionData } from 'n8n-workflow';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
-import { TOTP } from '../Totp.node';
+import { Totp } from '../Totp.node';
 import * as operations from '../operations';
 
 // Mock the operations
 jest.mock('../operations');
 
 describe('TOTP Node', () => {
-	let totpNode: TOTP;
+	let totpNode: Totp;
 	let mockExecuteFunctions: Partial<IExecuteFunctions>;
 
 	const mockedExecuteGenerate = operations.executeGenerate as jest.MockedFunction<typeof operations.executeGenerate>;
@@ -17,7 +17,7 @@ describe('TOTP Node', () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
-		totpNode = new TOTP();
+		totpNode = new Totp();
 		
 		mockExecuteFunctions = {
 			getInputData: jest.fn(),
@@ -173,19 +173,31 @@ describe('TOTP Node', () => {
 		});
 	});
 
-	describe('Execute - Multiple Items', () => {
-		it('should process multiple items', async () => {
-			const mockResult1 = { token: '123456' };
-			const mockResult2 = { token: '789012' };
-
-			(mockExecuteFunctions.getInputData as jest.Mock).mockReturnValue([
+		describe('Execute - Multiple Items', () => {
+			it('should process multiple items', async () => {
+				const mockResult1 = {
+					token: '123456',
+					secret: 'JBSWY3DPEHPK3PXP',
+					algorithm: 'sha1',
+					digits: 6,
+					period: 30,
+					expiresIn: 30,
+				};
+				const mockResult2 = {
+					token: '789012',
+					secret: 'JBSWY3DPEHPK3PXP',
+					algorithm: 'sha1',
+					digits: 6,
+					period: 30,
+					expiresIn: 30,
+				};			(mockExecuteFunctions.getInputData as jest.Mock).mockReturnValue([
 				{ json: {} },
 				{ json: {} },
 			]);
 			(mockExecuteFunctions.getNodeParameter as jest.Mock).mockReturnValue('generate');
 			mockedExecuteGenerate
-				.mockResolvedValueOnce(mockResult1 as any)
-				.mockResolvedValueOnce(mockResult2 as any);
+				.mockResolvedValueOnce(mockResult1)
+				.mockResolvedValueOnce(mockResult2);
 
 			const result = await totpNode.execute.call(
 				mockExecuteFunctions as IExecuteFunctions
@@ -243,12 +255,10 @@ describe('TOTP Node', () => {
 			(mockExecuteFunctions.getInputData as jest.Mock).mockReturnValue(items);
 			(mockExecuteFunctions.getNodeParameter as jest.Mock).mockReturnValue('generate');
 			
-			mockedExecuteGenerate
-				.mockResolvedValueOnce({ token: '123456' } as any)
-				.mockResolvedValueOnce({ token: '789012' } as any)
-				.mockResolvedValueOnce({ token: '345678' } as any);
-
-			const result = await totpNode.execute.call(
+				mockedExecuteGenerate
+					.mockResolvedValueOnce({ token: '123456', secret: 'SECRET', algorithm: 'sha1', digits: 6, period: 30, expiresIn: 30 })
+					.mockResolvedValueOnce({ token: '789012', secret: 'SECRET', algorithm: 'sha1', digits: 6, period: 30, expiresIn: 30 })
+					.mockResolvedValueOnce({ token: '345678', secret: 'SECRET', algorithm: 'sha1', digits: 6, period: 30, expiresIn: 30 });			const result = await totpNode.execute.call(
 				mockExecuteFunctions as IExecuteFunctions
 			);
 
@@ -269,14 +279,14 @@ describe('TOTP Node', () => {
 			(mockExecuteFunctions.getInputData as jest.Mock).mockReturnValue(items);
 
 			const operations = ['generate', 'verify', 'generateSecret', 'generateQR'];
-			operations.forEach((op, index) => {
+			operations.forEach((op) => {
 				(mockExecuteFunctions.getNodeParameter as jest.Mock).mockReturnValueOnce(op);
 			});
 
-			mockedExecuteGenerate.mockResolvedValue({ token: '123456' } as any);
-			mockedExecuteVerify.mockResolvedValue({ valid: true } as any);
-			mockedExecuteGenerateSecret.mockResolvedValue({ secret: 'SECRET' } as any);
-			mockedExecuteGenerateQR.mockResolvedValue({ qrCode: 'QR' } as any);
+			mockedExecuteGenerate.mockResolvedValue({ token: '123456', secret: 'SECRET', algorithm: 'sha1', digits: 6, period: 30, expiresIn: 30 });
+			mockedExecuteVerify.mockResolvedValue({ valid: true, token: '123456', secret: 'SECRET', algorithm: 'sha1', digits: 6, period: 30, tolerance: 1 });
+			mockedExecuteGenerateSecret.mockResolvedValue({ secret: 'SECRET', length: 32 });
+			mockedExecuteGenerateQR.mockResolvedValue({ qrCode: 'QR', uri: 'otpauth://totp/Test', secret: 'SECRET', label: 'Test', issuer: 'Test', format: 'dataURL', algorithm: 'sha1', digits: 6, period: 30 });
 
 			await totpNode.execute.call(mockExecuteFunctions as IExecuteFunctions);
 

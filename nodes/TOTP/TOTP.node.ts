@@ -3,6 +3,7 @@ import type {
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
+	IDataObject,
 } from 'n8n-workflow';
 import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import { nodeProperties } from './properties';
@@ -13,7 +14,7 @@ import {
 	executeGenerateQR,
 } from './operations';
 
-export class TOTP implements INodeType {
+export class Totp implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'TOTP',
 		name: 'totp',
@@ -50,15 +51,17 @@ export class TOTP implements INodeType {
 					case 'generateSecret':
 						result = await executeGenerateSecret.call(this, i);
 						break;
-					case 'generateQR':
-						result = await executeGenerateQR.call(this, i);
-						break;
-					default:
-						throw new Error(`Unknown operation: ${operation}`);
+				case 'generateQR':
+					result = await executeGenerateQR.call(this, i);
+					break;
+				default:
+					throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`, {
+						itemIndex: i,
+					});
 				}
 
 				returnData.push({
-					json: result as any,
+					json: result as unknown as IDataObject,
 					pairedItem: { item: i },
 				});
 			} catch (error) {
