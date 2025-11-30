@@ -8,6 +8,24 @@ export const nodeProperties: INodeProperties[] = [
 		noDataExpression: true,
 		options: [
 			{
+				name: 'Generate Backup Codes',
+				value: 'generateBackupCodes',
+				description: 'Generate backup codes for account recovery',
+				action: '🔐 Generate backup codes',
+			},
+			{
+				name: 'Generate QR Code',
+				value: 'generateQR',
+				description: 'Generate a QR code for TOTP setup',
+				action: '📱 Generate a QR code',
+			},
+			{
+				name: 'Generate Secret',
+				value: 'generateSecret',
+				description: 'Generate a new random TOTP secret',
+				action: '🎲 Generate a new secret',
+			},
+			{
 				name: 'Generate Token',
 				value: 'generate',
 				description: 'Generate a TOTP token from a secret',
@@ -19,27 +37,11 @@ export const nodeProperties: INodeProperties[] = [
 				description: 'Verify a TOTP token against a secret',
 				action: '✅ Verify a TOTP token',
 			},
-			{
-				name: 'Generate Secret',
-				value: 'generateSecret',
-				description: 'Generate a new random TOTP secret',
-				action: '🎲 Generate a new secret',
-			},
-{
-			name: 'Generate QR Code',
-			value: 'generateQR',
-			description: 'Generate a QR code for TOTP setup',
-			action: '📱 Generate a QR code',
-		},
-		{
-			name: 'Generate Backup Codes',
-			value: 'generateBackupCodes',
-			description: 'Generate backup codes for account recovery',
-			action: '🔐 Generate backup codes',
-		},
-	],
-	default: 'generate',
-},	// Generate Token operation parameters
+		],
+		default: 'generate',
+	},
+
+	// Generate Token operation parameters
 	{
 		displayName: 'Secret',
 		name: 'secret',
