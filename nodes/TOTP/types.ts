@@ -48,7 +48,9 @@ export interface GenerateQRResult {
 
 export interface GenerateBackupCodesResult {
 	codes: string[];
+	hashes?: string[];
 	count: number;
 	length: number;
 	format: string;
+	hashAlgorithm: string;
 }

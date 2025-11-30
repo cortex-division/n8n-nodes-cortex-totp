@@ -8,6 +8,7 @@ jest.mock('../../services/totp.service');
 describe('GenerateBackupCodes Operation', () => {
 	let mockExecuteFunctions: Partial<IExecuteFunctions>;
 	const mockedGenerateBackupCodes = totpService.generateBackupCodes as jest.MockedFunction<typeof totpService.generateBackupCodes>;
+	const mockedHashBackupCodes = totpService.hashBackupCodes as jest.MockedFunction<typeof totpService.hashBackupCodes>;
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -28,13 +29,16 @@ describe('GenerateBackupCodes Operation', () => {
 			'GHIJ3456',
 			'KLMN7890',
 		]);
+
+		mockedHashBackupCodes.mockReturnValue([]);
 	});
 
 	it('should generate backup codes with default parameters', async () => {
 		(mockExecuteFunctions.getNodeParameter as jest.Mock)
 			.mockReturnValueOnce(10) // backupCodeCount
 			.mockReturnValueOnce(8) // backupCodeLength
-			.mockReturnValueOnce('alphanumeric'); // backupCodeFormat
+			.mockReturnValueOnce('alphanumeric') // backupCodeFormat
+			.mockReturnValueOnce('none'); // backupCodeHashAlgorithm
 
 		const result = await executeGenerateBackupCodes.call(
 			mockExecuteFunctions as IExecuteFunctions,
@@ -57,9 +61,11 @@ describe('GenerateBackupCodes Operation', () => {
 			count: 10,
 			length: 8,
 			format: 'alphanumeric',
+			hashAlgorithm: 'none',
 		});
 
 		expect(mockedGenerateBackupCodes).toHaveBeenCalledWith(10, 8, 'alphanumeric');
+		expect(mockedHashBackupCodes).toHaveBeenCalledWith(expect.any(Array), 'none');
 	});
 
 	it('should generate backup codes with custom count', async () => {
@@ -74,7 +80,8 @@ describe('GenerateBackupCodes Operation', () => {
 		(mockExecuteFunctions.getNodeParameter as jest.Mock)
 			.mockReturnValueOnce(5) // backupCodeCount
 			.mockReturnValueOnce(8) // backupCodeLength
-			.mockReturnValueOnce('alphanumeric'); // backupCodeFormat
+			.mockReturnValueOnce('alphanumeric') // backupCodeFormat
+			.mockReturnValueOnce('none'); // backupCodeHashAlgorithm
 
 		const result = await executeGenerateBackupCodes.call(
 			mockExecuteFunctions as IExecuteFunctions,
@@ -95,7 +102,8 @@ describe('GenerateBackupCodes Operation', () => {
 		(mockExecuteFunctions.getNodeParameter as jest.Mock)
 			.mockReturnValueOnce(2) // backupCodeCount
 			.mockReturnValueOnce(12) // backupCodeLength
-			.mockReturnValueOnce('alphanumeric'); // backupCodeFormat
+			.mockReturnValueOnce('alphanumeric') // backupCodeFormat
+			.mockReturnValueOnce('none'); // backupCodeHashAlgorithm
 
 		const result = await executeGenerateBackupCodes.call(
 			mockExecuteFunctions as IExecuteFunctions,
@@ -115,7 +123,8 @@ describe('GenerateBackupCodes Operation', () => {
 		(mockExecuteFunctions.getNodeParameter as jest.Mock)
 			.mockReturnValueOnce(2) // backupCodeCount
 			.mockReturnValueOnce(8) // backupCodeLength
-			.mockReturnValueOnce('numeric'); // backupCodeFormat
+			.mockReturnValueOnce('numeric') // backupCodeFormat
+			.mockReturnValueOnce('none'); // backupCodeHashAlgorithm
 
 		const result = await executeGenerateBackupCodes.call(
 			mockExecuteFunctions as IExecuteFunctions,
@@ -135,7 +144,8 @@ describe('GenerateBackupCodes Operation', () => {
 		(mockExecuteFunctions.getNodeParameter as jest.Mock)
 			.mockReturnValueOnce(2) // backupCodeCount
 			.mockReturnValueOnce(8) // backupCodeLength
-			.mockReturnValueOnce('alphabetic'); // backupCodeFormat
+			.mockReturnValueOnce('alphabetic') // backupCodeFormat
+			.mockReturnValueOnce('none'); // backupCodeHashAlgorithm
 
 		const result = await executeGenerateBackupCodes.call(
 			mockExecuteFunctions as IExecuteFunctions,
@@ -146,12 +156,83 @@ describe('GenerateBackupCodes Operation', () => {
 		expect(mockedGenerateBackupCodes).toHaveBeenCalledWith(2, 8, 'alphabetic');
 	});
 
+	it('should include hashes when hash algorithm is sha256', async () => {
+		mockedGenerateBackupCodes.mockReturnValue([
+			'ABCD1234',
+			'EFGH5678',
+		]);
+		mockedHashBackupCodes.mockReturnValue([
+			'abc123hash',
+			'def456hash',
+		]);
+
+		(mockExecuteFunctions.getNodeParameter as jest.Mock)
+			.mockReturnValueOnce(2) // backupCodeCount
+			.mockReturnValueOnce(8) // backupCodeLength
+			.mockReturnValueOnce('alphanumeric') // backupCodeFormat
+			.mockReturnValueOnce('sha256'); // backupCodeHashAlgorithm
+
+		const result = await executeGenerateBackupCodes.call(
+			mockExecuteFunctions as IExecuteFunctions,
+			0
+		);
+
+		expect(result.hashAlgorithm).toBe('sha256');
+		expect(result.hashes).toEqual(['abc123hash', 'def456hash']);
+		expect(mockedHashBackupCodes).toHaveBeenCalledWith(expect.any(Array), 'sha256');
+	});
+
+	it('should include hashes when hash algorithm is sha512', async () => {
+		mockedGenerateBackupCodes.mockReturnValue([
+			'ABCD1234',
+		]);
+		mockedHashBackupCodes.mockReturnValue([
+			'longhash512',
+		]);
+
+		(mockExecuteFunctions.getNodeParameter as jest.Mock)
+			.mockReturnValueOnce(1) // backupCodeCount
+			.mockReturnValueOnce(8) // backupCodeLength
+			.mockReturnValueOnce('alphanumeric') // backupCodeFormat
+			.mockReturnValueOnce('sha512'); // backupCodeHashAlgorithm
+
+		const result = await executeGenerateBackupCodes.call(
+			mockExecuteFunctions as IExecuteFunctions,
+			0
+		);
+
+		expect(result.hashAlgorithm).toBe('sha512');
+		expect(result.hashes).toEqual(['longhash512']);
+		expect(mockedHashBackupCodes).toHaveBeenCalledWith(expect.any(Array), 'sha512');
+	});
+
+	it('should not include hashes when hash algorithm is none', async () => {
+		mockedGenerateBackupCodes.mockReturnValue([
+			'ABCD1234',
+		]);
+		mockedHashBackupCodes.mockReturnValue([]);
+
+		(mockExecuteFunctions.getNodeParameter as jest.Mock)
+			.mockReturnValueOnce(1) // backupCodeCount
+			.mockReturnValueOnce(8) // backupCodeLength
+			.mockReturnValueOnce('alphanumeric') // backupCodeFormat
+			.mockReturnValueOnce('none'); // backupCodeHashAlgorithm
+
+		const result = await executeGenerateBackupCodes.call(
+			mockExecuteFunctions as IExecuteFunctions,
+			0
+		);
+
+		expect(result.hashAlgorithm).toBe('none');
+		expect(result.hashes).toBeUndefined();
+	});
+
 	it('should handle different item indices', async () => {
 		(mockExecuteFunctions.getNodeParameter as jest.Mock)
-			.mockReturnValue(10)
-			.mockReturnValueOnce(10)
-			.mockReturnValueOnce(8)
-			.mockReturnValueOnce('alphanumeric');
+			.mockReturnValueOnce(10) // backupCodeCount
+			.mockReturnValueOnce(8) // backupCodeLength
+			.mockReturnValueOnce('alphanumeric') // backupCodeFormat
+			.mockReturnValueOnce('none'); // backupCodeHashAlgorithm
 
 		await executeGenerateBackupCodes.call(
 			mockExecuteFunctions as IExecuteFunctions,
@@ -161,5 +242,6 @@ describe('GenerateBackupCodes Operation', () => {
 		expect(mockExecuteFunctions.getNodeParameter).toHaveBeenCalledWith('backupCodeCount', 5, 10);
 		expect(mockExecuteFunctions.getNodeParameter).toHaveBeenCalledWith('backupCodeLength', 5, 8);
 		expect(mockExecuteFunctions.getNodeParameter).toHaveBeenCalledWith('backupCodeFormat', 5, 'alphanumeric');
+		expect(mockExecuteFunctions.getNodeParameter).toHaveBeenCalledWith('backupCodeHashAlgorithm', 5, 'none');
 	});
 });

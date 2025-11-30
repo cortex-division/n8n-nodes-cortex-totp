@@ -108,3 +108,17 @@ export function generateBackupCodes(
 
 	return codes;
 }
+
+/**
+ * Hashes backup codes using the specified algorithm
+ */
+export function hashBackupCodes(codes: string[], algorithm: string): string[] {
+	if (algorithm === 'none') {
+		return [];
+	}
+
+	return codes.map((code) => {
+		const hash = createHmac(algorithm, code).update(code).digest('hex');
+		return hash;
+	});
+}

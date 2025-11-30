@@ -238,6 +238,35 @@ export const nodeProperties: INodeProperties[] = [
 		},
 		description: 'The format of the backup codes',
 	},
+	{
+		displayName: 'Hash Algorithm',
+		name: 'backupCodeHashAlgorithm',
+		type: 'options',
+		options: [
+			{
+				name: 'None',
+				value: 'none',
+				description: 'Do not hash the backup codes',
+			},
+			{
+				name: 'SHA256',
+				value: 'sha256',
+				description: 'Hash codes using SHA-256',
+			},
+			{
+				name: 'SHA512',
+				value: 'sha512',
+				description: 'Hash codes using SHA-512',
+			},
+		],
+		default: 'none',
+		displayOptions: {
+			show: {
+				operation: ['generateBackupCodes'],
+			},
+		},
+		description: 'Algorithm to use for hashing backup codes (hashes are included alongside plain codes)',
+	},
 
 	// QR Code options
 	{
