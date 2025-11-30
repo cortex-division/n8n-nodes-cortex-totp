@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-cortex-totp",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "n8n node for generating and verifying Time-based One-Time Passwords (TOTP)",
   "license": "MIT",
   "homepage": "https://github.com/cortex-division/n8n-nodes-cortex-totp",
