@@ -45,3 +45,10 @@ export interface GenerateQRResult {
 	digits: number;
 	period: number;
 }
+
+export interface GenerateBackupCodesResult {
+	codes: string[];
+	count: number;
+	length: number;
+	format: string;
+}

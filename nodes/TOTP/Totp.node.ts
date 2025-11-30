@@ -12,6 +12,7 @@ import {
 	executeVerify,
 	executeGenerateSecret,
 	executeGenerateQR,
+	executeGenerateBackupCodes,
 } from './operations';
 
 export class Totp implements INodeType {
@@ -51,10 +52,13 @@ export class Totp implements INodeType {
 					case 'generateSecret':
 						result = await executeGenerateSecret.call(this, i);
 						break;
-				case 'generateQR':
-					result = await executeGenerateQR.call(this, i);
-					break;
-				default:
+					case 'generateQR':
+						result = await executeGenerateQR.call(this, i);
+						break;
+					case 'generateBackupCodes':
+						result = await executeGenerateBackupCodes.call(this, i);
+						break;
+					default:
 					throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`, {
 						itemIndex: i,
 					});

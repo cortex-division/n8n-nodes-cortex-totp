@@ -72,3 +72,39 @@ export function verifyTOTP(
 
 	return false;
 }
+
+/**
+ * Generates backup codes for account recovery
+ */
+export function generateBackupCodes(
+	count: number = 10,
+	length: number = 8,
+	format: string = 'alphanumeric',
+): string[] {
+	const codes: string[] = [];
+
+	let charset: string;
+	switch (format) {
+		case 'numeric':
+			charset = '0123456789';
+			break;
+		case 'alphabetic':
+			charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+			break;
+		case 'alphanumeric':
+		default:
+			charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+			break;
+	}
+
+	for (let i = 0; i < count; i++) {
+		const bytes = randomBytes(length);
+		let code = '';
+		for (let j = 0; j < length; j++) {
+			code += charset[bytes[j] % charset.length];
+		}
+		codes.push(code);
+	}
+
+	return codes;
+}

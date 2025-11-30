@@ -25,17 +25,21 @@ export const nodeProperties: INodeProperties[] = [
 				description: 'Generate a new random TOTP secret',
 				action: '🎲 Generate a new secret',
 			},
-			{
-				name: 'Generate QR Code',
-				value: 'generateQR',
-				description: 'Generate a QR code for TOTP setup',
-				action: '📱 Generate a QR code',
-			},
-		],
-		default: 'generate',
-	},
-
-	// Generate Token operation parameters
+{
+			name: 'Generate QR Code',
+			value: 'generateQR',
+			description: 'Generate a QR code for TOTP setup',
+			action: '📱 Generate a QR code',
+		},
+		{
+			name: 'Generate Backup Codes',
+			value: 'generateBackupCodes',
+			description: 'Generate backup codes for account recovery',
+			action: '🔐 Generate backup codes',
+		},
+	],
+	default: 'generate',
+},	// Generate Token operation parameters
 	{
 		displayName: 'Secret',
 		name: 'secret',
@@ -176,6 +180,61 @@ export const nodeProperties: INodeProperties[] = [
 			},
 		},
 		description: 'The length of the secret to generate',
+	},
+
+	// Generate Backup Codes operation parameters
+	{
+		displayName: 'Number of Codes',
+		name: 'backupCodeCount',
+		type: 'number',
+		default: 10,
+		displayOptions: {
+			show: {
+				operation: ['generateBackupCodes'],
+			},
+		},
+		description: 'The number of backup codes to generate',
+	},
+	{
+		displayName: 'Code Length',
+		name: 'backupCodeLength',
+		type: 'number',
+		default: 8,
+		displayOptions: {
+			show: {
+				operation: ['generateBackupCodes'],
+			},
+		},
+		description: 'The length of each backup code',
+	},
+	{
+		displayName: 'Code Format',
+		name: 'backupCodeFormat',
+		type: 'options',
+		options: [
+			{
+				name: 'Alphanumeric',
+				value: 'alphanumeric',
+				description: 'Letters and numbers (A-Z, 0-9)',
+			},
+			{
+				name: 'Numeric',
+				value: 'numeric',
+				description: 'Numbers only (0-9)',
+			},
+			{
+				name: 'Alphabetic',
+				value: 'alphabetic',
+				description: 'Letters only (A-Z)',
+			},
+		],
+		default: 'alphanumeric',
+		displayOptions: {
+			show: {
+				operation: ['generateBackupCodes'],
+			},
+		},
+		description: 'The format of the backup codes',
 	},
 
 	// QR Code options
